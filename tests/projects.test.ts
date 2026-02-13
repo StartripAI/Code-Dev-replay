@@ -34,3 +34,34 @@ test("discoverProjects reads workspace.json roots", () => {
   rmSync(root, { recursive: true, force: true });
 });
 
+test("discoverProjects accepts Windows-style absolute paths from events", () => {
+  const root = mkdtempSync(join(tmpdir(), "wdyd-projects-"));
+
+  const paths: ClientPaths = {
+    client: "cursor",
+    roots: [root],
+    files: [],
+    globs: [],
+  };
+  const events: RawEvent[] = [
+    {
+      id: "evt-win-1",
+      client: "cursor",
+      sourcePath: join(root, "history.json"),
+      timestamp: Date.now(),
+      kind: "history_entry",
+      title: "cursor:history",
+      content: "entry",
+      metadata: {
+        cwd: "C:\\Users\\alice\\projects\\paper",
+      },
+    },
+  ];
+  const audit = createAudit("cursor");
+  const projects = discoverProjects("cursor", paths, events, audit);
+
+  assert.ok(projects.length >= 1);
+  assert.equal(projects[0].name.toLowerCase(), "paper");
+
+  rmSync(root, { recursive: true, force: true });
+});

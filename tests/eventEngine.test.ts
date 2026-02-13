@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { classifyEvents, DEFAULT_RULES } from "../packages/event-engine/src";
+import { bootstrapRulesFromTimeline, classifyEvents, DEFAULT_RULES } from "../packages/event-engine/src";
 import type { TimelineEvent } from "../packages/shared-types/src";
 
 const timeline: TimelineEvent[] = [
@@ -63,4 +63,40 @@ test("classifyEvents is stable and creates follow-up links", async () => {
   assert.deepEqual(first, second);
   assert.ok(first.length > 0);
   assert.ok(first[0].followUpEventIds.length >= 1);
+});
+
+test("bootstrap rules do not force neutral events into high-risk types", async () => {
+  const neutralTimeline: TimelineEvent[] = [
+    {
+      id: "n1",
+      client: "codex",
+      ts: 1,
+      label: "edited file",
+      detail: "updated tests",
+      actor: "assistant",
+      tags: ["codex", "assistant_message"],
+      sourcePath: "/tmp/n1",
+      metadata: {},
+    },
+    {
+      id: "n2",
+      client: "codex",
+      ts: 2,
+      label: "edited file",
+      detail: "updated tests",
+      actor: "assistant",
+      tags: ["codex", "assistant_message"],
+      sourcePath: "/tmp/n2",
+      metadata: {},
+    },
+  ];
+
+  const rules = bootstrapRulesFromTimeline(neutralTimeline);
+  const majors = await classifyEvents(neutralTimeline, {
+    rules,
+    followUpWindow: 10,
+    followUpCount: 3,
+  });
+
+  assert.equal(majors.length, 0);
 });

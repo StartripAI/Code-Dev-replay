@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, normalize, resolve } from "node:path";
+import { dirname, normalize, resolve, sep } from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import {
@@ -181,16 +181,21 @@ function scopeRoots(scope: ProjectScope): string[] {
   return scope.mode === "single" ? [scope.project.root] : scope.projects.map((x) => x.root);
 }
 
+function isWithinRoot(pathOrRoot: string, root: string): boolean {
+  const normalizedPath = normalize(resolve(pathOrRoot));
+  const normalizedRoot = normalize(resolve(root));
+  return normalizedPath === normalizedRoot || normalizedPath.startsWith(`${normalizedRoot}${sep}`);
+}
+
 function eventBelongsToScope(event: TimelineEvent, scope: ProjectScope): boolean {
   const rawRoot = String(event.metadata.projectRoot ?? event.metadata.cwd ?? event.metadata.project ?? "");
   if (!rawRoot) return true;
-  const root = normalize(resolve(rawRoot));
 
   if (scope.mode === "single") {
-    return root === scope.project.root || root.startsWith(`${scope.project.root}/`);
+    return isWithinRoot(rawRoot, scope.project.root);
   }
 
-  return scope.projects.some((project) => root === project.root || root.startsWith(`${project.root}/`));
+  return scope.projects.some((project) => isWithinRoot(rawRoot, project.root));
 }
 
 function filterTimeline(timeline: TimelineEvent[], range: { start: number; end: number }, scope: ProjectScope): TimelineEvent[] {

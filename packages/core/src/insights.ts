@@ -1,4 +1,4 @@
-import { basename, normalize, relative, resolve } from "node:path";
+import { basename, normalize, relative, resolve, sep } from "node:path";
 import type {
   AnalysisInsights,
   EvidenceItem,
@@ -467,12 +467,16 @@ function buildRepetitionClusters(instructions: UserInstruction[], evidence: Evid
 }
 
 function matchProjectRoot(scope: ProjectScope, path: string, projectId?: string): string | undefined {
+  const isWithinRoot = (root: string): boolean => {
+    const normalizedRoot = normalize(resolve(root));
+    return path === normalizedRoot || path.startsWith(`${normalizedRoot}${sep}`);
+  };
   if (scope.mode === "single") return scope.project.root;
   if (projectId) {
     const byId = scope.projects.find((project) => project.id === projectId);
     if (byId) return byId.root;
   }
-  return scope.projects.find((project) => path.startsWith(project.root))?.root;
+  return scope.projects.find((project) => isWithinRoot(project.root))?.root;
 }
 
 function deriveArea(scope: ProjectScope, pathRaw: string, projectId?: string): string {

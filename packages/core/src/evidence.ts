@@ -1,5 +1,5 @@
 import { readdirSync, statSync } from "node:fs";
-import { join, normalize, resolve, relative } from "node:path";
+import { join, normalize, resolve, relative, sep } from "node:path";
 import type {
   ClientKind,
   EvidenceConflict,
@@ -76,11 +76,15 @@ function scopeRoots(scope: ProjectScope): string[] {
 function matchProjectId(scope: ProjectScope, pathOrRoot: string | undefined): string | undefined {
   if (!pathOrRoot) return undefined;
   const normalized = normalize(resolve(pathOrRoot));
+  const isWithinRoot = (root: string): boolean => {
+    const normalizedRoot = normalize(resolve(root));
+    return normalized === normalizedRoot || normalized.startsWith(`${normalizedRoot}${sep}`);
+  };
   if (scope.mode === "single") {
-    return normalized.startsWith(scope.project.root) ? scope.project.id : undefined;
+    return isWithinRoot(scope.project.root) ? scope.project.id : undefined;
   }
   for (const project of scope.projects) {
-    if (normalized.startsWith(project.root)) return project.id;
+    if (isWithinRoot(project.root)) return project.id;
   }
   return undefined;
 }

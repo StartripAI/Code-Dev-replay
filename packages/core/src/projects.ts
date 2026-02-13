@@ -33,7 +33,19 @@ function maybeUriToPath(value: string): string {
   if (!value) return value;
   if (value.startsWith("file://")) {
     try {
-      return new URL(value).pathname;
+      const uri = new URL(value);
+      const pathname = decodeURIComponent(uri.pathname);
+      if (uri.host) {
+        const unc = `//${uri.host}${pathname}`;
+        return process.platform === "win32" ? unc.replaceAll("/", "\\") : unc;
+      }
+      if (process.platform === "win32") {
+        if (/^\/[a-zA-Z]:\//.test(pathname)) {
+          return pathname.slice(1).replaceAll("/", "\\");
+        }
+        return pathname.replaceAll("/", "\\");
+      }
+      return pathname;
     } catch {
       return value;
     }
@@ -43,7 +55,33 @@ function maybeUriToPath(value: string): string {
 
 function normalizeRoot(input: string): string | null {
   if (!input) return null;
-  const maybePath = maybeUriToPath(String(input));
+  const maybePath = maybeUriToPath(String(input)).trim();
+  if (!maybePath) return null;
+
+  // Windows drive-letter absolute path, such as C:\Users\alice\repo
+  if (/^[a-zA-Z]:[\\/]/.test(maybePath)) {
+    if (process.platform === "win32") {
+      return normalize(resolve(maybePath));
+    }
+    return normalize(resolve(`/${maybePath.replaceAll("\\", "/")}`));
+  }
+
+  // UNC path, such as \\server\share\repo
+  if (maybePath.startsWith("\\\\")) {
+    if (process.platform === "win32") {
+      return normalize(resolve(maybePath));
+    }
+    return normalize(resolve(maybePath.replaceAll("\\", "/")));
+  }
+
+  // file:///C:/... often becomes /C:/... outside Windows.
+  if (/^\/[a-zA-Z]:[\\/]/.test(maybePath)) {
+    if (process.platform === "win32") {
+      return normalize(resolve(maybePath.slice(1)));
+    }
+    return normalize(resolve(maybePath.replaceAll("\\", "/")));
+  }
+
   if (!maybePath.startsWith("/")) return null;
   return normalize(resolve(maybePath));
 }
@@ -221,4 +259,3 @@ export function defaultProjectScope(candidates: ProjectCandidate[], query: Query
   }
   return null;
 }
-
