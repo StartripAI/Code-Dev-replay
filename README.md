@@ -125,6 +125,33 @@ npm run build
 4. Commit with a clear release message
 5. Tag and push
 
+## GitHub Release Copy
+
+### Title
+
+Proofline v0.1.0 — Evidence-Backed Replay for AI Coding Sessions
+
+### Highlights
+
+- In-client replay engine for AI coding workflows
+- Single-client per run (strictly no cross-client aggregation)
+- Natural-language CLI: ask "what did I do yesterday?" and get a factual playback
+- Activity-first output: what you did first, files second as evidence
+- Major event timeline + after-action chains (soccer-style event model)
+- Repetition diagnosis: feature polish vs stuck issue vs normal iteration
+- Before->after deltas with evidence basis
+- JSON/HTML export from the same run
+- Generation runners: Codex, Claude, Cursor, OpenCode
+- Parse-only in v1.1: VS Code, Antigravity
+
+### Roadmap
+
+- v0.2: Better per-client extractors and higher-fidelity project discovery
+- v0.3: Stronger conflict explainability and confidence calibration
+- v0.4: Richer timeline interactions and performance for very large histories
+- v0.5: Extensible connector/event-rule plugin model
+- v0.6: Automated daily/weekly replay summaries (opt-in)
+
 ## License
 
 MIT
