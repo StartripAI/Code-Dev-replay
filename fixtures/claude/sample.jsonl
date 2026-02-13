@@ -1,0 +1,3 @@
+{"type":"user","timestamp":"2026-02-10T10:00:00.000Z","message":"please implement auth"}
+{"type":"assistant","timestamp":"2026-02-10T10:01:00.000Z","message":{"content":[{"type":"text","text":"implemented"}]}}
+{"type":"progress","timestamp":"2026-02-10T10:01:30.000Z","data":{"step":"done"}}

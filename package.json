@@ -1,0 +1,25 @@
+{
+  "name": "proofline-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "bin": {
+    "proofline": "dist/apps/cli/src/index.js",
+    "wdyd": "dist/apps/cli/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build --silent && node --test dist/tests/*.test.js",
+    "start": "node dist/apps/cli/src/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.3"
+  }
+}

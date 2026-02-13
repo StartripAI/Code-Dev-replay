@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "resource": "cursor-history",
+  "entries": [
+    { "id": "a1", "source": "Workspace Edit", "timestamp": 1769000000000 },
+    { "id": "a2", "source": "Undo", "timestamp": 1769000100000 }
+  ]
+}

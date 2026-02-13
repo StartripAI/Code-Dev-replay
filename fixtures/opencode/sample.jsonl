@@ -1,0 +1,2 @@
+{"timestamp":"2026-02-10T14:00:00.000Z","event":"session_start","message":"begin"}
+{"timestamp":"2026-02-10T14:02:00.000Z","event":"tool","message":"apply patch"}

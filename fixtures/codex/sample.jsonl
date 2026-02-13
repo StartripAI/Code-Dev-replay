@@ -1,0 +1,3 @@
+{"type":"event_msg","timestamp":"2026-02-10T12:00:00.000Z","payload":{"type":"user_message","message":"fix bug"}}
+{"type":"event_msg","timestamp":"2026-02-10T12:01:00.000Z","payload":{"type":"token_count","info":{"total_tokens":123}}}
+{"type":"response_item","timestamp":"2026-02-10T12:02:00.000Z","payload":{"type":"message","text":"fixed"}}
